@@ -7,7 +7,7 @@ const fs = require('fs');
 // Bot varibles
 var embedColor = 0x7ae8ff;
 var channel;
-var channelName = ''; // Enter name of notification room
+var channelName = 'hodina'; // Enter name of notification room
 
 bot.login(TOKEN);
 
@@ -94,7 +94,9 @@ function checkTimetable(tagUsers = false, message = undefined){
 
 		var embed = createMessage()
 		.setTitle(`Class: ${currentClass['Name']}`)
-		.setDescription(`${currentClass['Name']} will start in ${timeLeft[0] * 60 + timeLeft[1]} minutes (${currentClass['Time']}).\nAddress: ${url}\nGroup: ${getRoleId(currentClass['Group'], tagUsers)}`);
+		.setDescription(`${currentClass['Name']} will start in ${timeLeft[0] * 60 + timeLeft[1]} minutes (${currentClass['Time']}).
+		Address: ${url}
+		Group: ${getRoleId(currentClass['Group'], tagUsers)}`);
 
 		if(currentClass['url'].indexOf('http') != -1){
 			embed.setURL(currentClass['url']);
@@ -156,7 +158,8 @@ function checkTimes(time1, time2, difference){
  */
 function createMessage(){
 	var embed = new MessageEmbed()
-	.setAuthor('Timetable bot [Github](https://github.com/ItsOKayCZ/Discord/tree/master/2020/Timetable)')
+	.setAuthor('Timetable bot ')
+	.setFooter('Github: https://github.com/ItsOKayCZ/Discord/tree/master/2020/Timetable')
 	.setColor(embedColor);
 
 	return embed;
@@ -185,7 +188,7 @@ function checkClass(){
  * @param message	-> The message from the channel that calls the function
  */
 function printSchedule(message){
-	var embd = createMessage()
+	var embed = createMessage()
 	.setTitle('Timetable schedule')
 	.setDescription('You can download the excel table for timetable')
 	.attachFiles('timetable.xlsx');
