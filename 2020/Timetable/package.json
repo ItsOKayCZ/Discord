@@ -1,0 +1,15 @@
+{
+  "name": "time-table",
+  "version": "1.0.0",
+  "description": "Shows the time table",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Oldrich Krupauer",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.1.1",
+    "dotenv": "^8.2.0"
+  }
+}
