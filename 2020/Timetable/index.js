@@ -7,7 +7,7 @@ const fs = require('fs');
 // Bot varibles
 var embedColor = 0x7ae8ff;
 var channel;
-var channelName = 'hodina'; // Enter name of notification room
+var channelName = 'hodiny'; // Enter name of notification room
 
 bot.login(TOKEN);
 
@@ -19,6 +19,7 @@ bot.login(TOKEN);
  *	  "Name": "AJ",
  *	  "url": "jitsi.ssps.cz/something",
  *	  "Time": "10:00",
+ * 	  "Password": "testing",
  *
  *	  # Variations
  *	  "Groups": "1. skupina",
@@ -49,6 +50,8 @@ bot.on('ready', function(){
 
 	checkClass();
 	setInterval(checkClass, 1000 * 60);
+
+	setActivity();
 });
 
 bot.on('message', function(message){
@@ -94,9 +97,13 @@ function checkTimetable(tagUsers = false, message = undefined){
 
 		var embed = createMessage()
 		.setTitle(`Class: ${currentClass['Name']}`)
-		.setDescription(`${currentClass['Name']} will start in ${timeLeft[0] * 60 + timeLeft[1]} minutes (${currentClass['Time']}).
-		Address: ${url}
-		Group: ${getRoleId(currentClass['Group'], tagUsers)}`);
+		.setDescription(`**${currentClass['Name']}** will start in **${timeLeft[0] * 60 + timeLeft[1]}** minutes (${currentClass['Time']}).
+		**Address**: ${url}
+		**Group**: ${getRoleId(currentClass['Group'], tagUsers)}`);
+
+		if(currentClass['Password'] != undefined){
+			embed.setDescription(embed.description + `\n**Password**: ${currentClass['Password']}`);
+		}
 
 		if(currentClass['url'].indexOf('http') != -1){
 			embed.setURL(currentClass['url']);
@@ -117,6 +124,7 @@ function checkTimetable(tagUsers = false, message = undefined){
 	} else {
 		channel.send(embed);
 	}
+	setActivity();
 }
 
 /**
@@ -197,7 +205,7 @@ function printSchedule(message){
 	for(var i = 0; i < tempDays.length; i++){
 		var str = "";
 		for(var j = 0; j < timetable[tempDays[i]].length; j++){
-			str += `**${timetable[tempDays[i]][j]['Name']} (${timetable[tempDays[i]][j]['Time']})** | `;
+			str += `**${timetable[tempDays[i]][j]['Name']} (${timetable[tempDays[i]][j]['Time']})** *(${getRoleId(timetable[tempDays[i]][j]['Group'])})* | `;
 		}
 		embed.addField(`**${tempDays[i]}**`, str, false); 
 	}
@@ -260,6 +268,12 @@ function getRoleId(roleName, tagUsers = false){
 		} else {
 			roleName = '1. polovina';
 		}
+	} else if(roleName == 'divided + 1'){
+		if(getWeekNumber(new Date())[1] % 2 == 0){
+			roleName = '1. polovina';
+		} else {
+			roleName = '2. polovina';
+		}
 	}
 	
 	if(tagUsers == false){
@@ -312,10 +326,63 @@ function getRoomId(roomName){
 	var id;
 
 	id = bot.channels.cache.find(function(room){
-		if(room.name == roomName){
+		if(room.type == 'text' && room.name == roomName){
 			return room.id;
 		}
 	});
 	
 	return id;
+}
+
+/**
+ * Displays a quote to the bot presence
+ */
+function setActivity(){
+	var quotes = [
+		"Hello world",
+		"We all make choices in life, but in the end our choices make us",
+		"Get over here",
+		"The right man in the wrong place can make all the difference in the world",
+		"Bring me a bucket, and i'll show you a bucket",
+		"...",
+		"Don't wish it were easier, wish you were better",
+		"Trust me",
+		"Nothing is true, eveything is permitted",
+		"NOTHING IS MORE BADASS THAN TREAING A WOMAN WITH RESPECT!",
+		"It’s dangerous to go alone, take this!",
+		"Endure and survive",
+		"I miss the internet",
+		"Thank you Mario!, But our Princess is in another castle",
+		"It's a-me, Mario!",
+		"Finish him!",
+		"Snake? Snake? SNAAAAAAAKE!!!",
+		"Grass grows, birds fly, sun shines, and brother, I hurt people",
+		"Every puzzle has an answer",
+		"Hey! Listen!",
+		"Space. Space. I'm in space. SPAAAAAACE!",
+		"Do a barrel roll",
+		"Science isn't about why! It's about why not!",
+		"Stop right there, criminal scum!",
+		"I don't want to set the world on fire...",
+		"Are you a boy or a girl?",
+		"Praise the sun!",
+		"YOU DIED",
+		"Contructing pylons",
+		"Rip and tare",
+		"Oh, hi Mark",
+		"+1",
+		"It's time to kick ass and chew bubble gum... and I'm all outta gum",
+		"You were almost a Jill sandwich!",
+		"Would you kindly...",
+		"It's dangerous to go alone, take this!",
+		"What is bravery, without a dash of recklessness?",
+		"I will kill you with dicks",
+		"DEATH IS A PREFERABLE ALTERNATIVE TO COMMUNISM",
+		"No Russian.",
+		"Waka Waka Waka",
+		"The cake is a lie",
+		"Kept you waiting, huh?"
+	];
+	var quote = quotes[Math.floor(Math.random() * quotes.length)];
+	bot.user.setActivity(quote);
 }
